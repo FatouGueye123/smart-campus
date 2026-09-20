@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Campus — Espace Administrateur</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-chip"></div>
+      <div>
+        <div class="brand-name">Smart Campus</div>
+        <div class="brand-sub" id="userName">Administrateur</div>
+      </div>
+    </div>
+    <span class="role-badge">Espace Administrateur</span>
+    <div class="sidebar-foot">
+      <span class="logout-link" onclick="logout()">↩ Déconnexion</span>
+    </div>
+  </aside>
+
+  <main>
+    <h1 class="page-title">Supervision du campus</h1>
+    <p class="page-sub">Journal d'audit, alertes de fraude, recharge et gestion des accès.</p>
+
+    <div id="alertBox"></div>
+
+    <section class="kpi-strip" id="kpiStrip">
+      <div class="kpi"><div class="label">Transactions</div><div class="value" id="kpiTx">—</div></div>
+      <div class="kpi"><div class="label">Alertes en attente</div><div class="value" id="kpiFraud">—</div></div>
+      <div class="kpi"><div class="label">Comptes actifs</div><div class="value" id="kpiUsers">—</div></div>
+    </section>
+
+    <div class="panel">
+      <h2>Alertes de fraude non traitées</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Étudiant</th><th>UID</th><th>Raison</th><th>Date</th></tr></thead>
+          <tbody id="fraudBody"><tr><td colspan="4" class="empty-state">Chargement...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Recharge manuelle</h2>
+      <form id="rechargeForm" class="form-inline">
+        <div class="form-row">
+          <label for="rUid">UID de la carte</label>
+          <input type="text" id="rUid" placeholder="ex: A1B2C3D4" required>
+        </div>
+        <div class="form-row">
+          <label for="rAmount">Montant (FCFA)</label>
+          <input type="number" id="rAmount" min="1" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Recharger</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Gestion des accès</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="usersBody"><tr><td colspan="5" class="empty-state">Chargement...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Journal d'audit — transactions récentes</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Étudiant</th><th>UID</th><th>Service</th><th>Montant</th><th>Statut</th><th>Risque IA</th></tr></thead>
+          <tbody id="auditBody"><tr><td colspan="7" class="empty-state">Chargement...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>

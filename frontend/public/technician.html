@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Campus — Espace Technicien</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-chip"></div>
+      <div>
+        <div class="brand-name">Smart Campus</div>
+        <div class="brand-sub" id="userName">Technicien</div>
+      </div>
+    </div>
+    <span class="role-badge">Espace Technicien</span>
+    <div class="sidebar-foot">
+      <span class="logout-link" onclick="logout()">↩ Déconnexion</span>
+    </div>
+  </aside>
+
+  <main>
+    <h1 class="page-title">Maintenance & bornes</h1>
+    <p class="page-sub">Associez une carte à un étudiant et surveillez l'état des bornes ESP32.</p>
+
+    <div id="alertBox"></div>
+
+    <div class="panel">
+      <h2>Associer une carte</h2>
+      <form id="associateForm" class="form-inline">
+        <div class="form-row">
+          <label for="uid">UID de la carte</label>
+          <input type="text" id="uid" placeholder="ex: A1B2C3D4" required>
+        </div>
+        <div class="form-row">
+          <label for="email">Email de l'étudiant</label>
+          <input type="email" id="email" placeholder="prenom.nom@campus.edu" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Associer</button>
+      </form>
+    </div>
+
+    <div class="panel">
+  <h2>Débloquer une carte</h2>
+  <form id="unblockForm" class="form-inline">
+    <div class="form-row">
+      <label for="uUid">UID de la carte</label>
+      <input type="text" id="uUid" placeholder="ex: A1B2C3D4" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Débloquer</button>
+  </form>
+</div>
+
+    <div class="panel">
+      <h2>État des bornes</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Borne</th><th>Emplacement</th><th>Statut</th><th>Dernière activité</th></tr></thead>
+          <tbody id="devicesBody">
+            <tr><td colspan="4" class="empty-state">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/technician.js"></script>
+</body>
+</html>

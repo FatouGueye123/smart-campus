@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Campus — Espace Étudiant</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-chip"></div>
+      <div>
+        <div class="brand-name">Smart Campus</div>
+        <div class="brand-sub" id="userName">Étudiant</div>
+      </div>
+    </div>
+    <span class="role-badge">Espace Étudiant</span>
+    <div class="sidebar-foot">
+      <span class="logout-link" onclick="logout()">↩ Déconnexion</span>
+    </div>
+  </aside>
+
+  <main>
+    <h1 class="page-title">Ma carte étudiante</h1>
+    <p class="page-sub">Solde, historique des transactions et sécurité de votre carte.</p>
+
+    <div id="alertBox"></div>
+
+    <section class="kpi-strip" id="kpiStrip">
+      <div class="kpi"><div class="label">Solde disponible</div><div class="value" id="balanceValue">—</div></div>
+      <div class="kpi"><div class="label">Statut de la carte</div><div class="value" id="statusValue">—</div></div>
+      <div class="kpi"><div class="label">UID</div><div class="value" id="uidValue" style="font-size:16px;">—</div></div>
+    </section>
+
+    <div class="panel">
+      <h2>Sécurité</h2>
+      <p class="page-sub" style="margin-bottom:14px;">En cas de perte ou de vol, bloquez immédiatement votre carte. Un technicien pourra la réactiver après vérification.</p>
+      <button class="btn btn-danger" id="blockBtn">Bloquer ma carte</button>
+    </div>
+
+    <div class="panel">
+      <h2>Historique des transactions</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Service</th><th>Montant</th><th>Statut</th></tr></thead>
+          <tbody id="historyBody">
+            <tr><td colspan="4" class="empty-state">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/student.js"></script>
+</body>
+</html>
