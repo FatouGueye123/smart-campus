@@ -96,4 +96,20 @@ async function listUsers(req, res) {
   }
 }
 
-module.exports = { getAuditLog, manualRecharge, updateUserAccess, listUsers };
+// GET /api/admin/cards
+async function listCards(req, res) {
+  try {
+    const result = await pool.query(
+      `SELECT c.id, c.uid, c.balance, c.status, c.last_scanned_at, u.full_name AS student
+       FROM cards c
+       LEFT JOIN users u ON u.id = c.user_id
+       ORDER BY c.id`
+    );
+    res.json({ cards: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+}
+
+module.exports = { getAuditLog, manualRecharge, updateUserAccess, listUsers, listCards };
