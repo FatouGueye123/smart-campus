@@ -9,8 +9,7 @@
   Câblage RC522 -> ESP32 :
     SDA->5  SCK->18  MOSI->23  MISO->19  RST->22  3.3V->3.3V  GND->GND
   Câblage OLED SSD1306 (I2C, adresse 0x3C) -> ESP32 :
-    SDA->21  SCL->4  VCC->3.3V  GND->GND   (SCL déplacé sur GPIO4 pour ne
-    pas entrer en conflit avec le RST du RC522 sur GPIO22)
+    SDA->21  SCL->4  VCC->3.3V  GND->GND
   LED verte -> GPIO25 | LED rouge -> GPIO26 | Buzzer -> GPIO27
 
   Bibliothèques : MFRC522, Adafruit_SSD1306, Adafruit_GFX, ArduinoJson
@@ -23,6 +22,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
@@ -43,11 +43,8 @@ Adafruit_SSD1306 display(128, 64, &Wire, -1);
 const char* WIFI_SSID     = "Wokwi-GUEST";
 const char* WIFI_PASSWORD = "";
 
-// Avec le Wokwi IoT Gateway (wokwigw) lancé sur votre machine, le simulateur
-// peut atteindre votre backend local via l'hôte spécial "host.wokwi.internal"
-// (voir README.md, section "Wokwi Gateway"). Sans gateway, remplacez par
-// l'URL publique d'un backend déployé (Render, Railway, etc.).
-const char* SERVER_URL   = "http://host.wokwi.internal:4000/api/hardware/scan";
+// Remplace par TON URL Render complète
+const char* SERVER_URL   = "https://smart-campus-backend-ne5z.onrender.com/api/hardware/scan";
 const char* DEVICE_KEY   = "demo-device-key-please-change"; // doit matcher `devices.api_key`
 
 const char* SERVICES[] = {"restaurant", "bibliotheque", "transport", "photocopie"};
@@ -124,15 +121,26 @@ void envoyerScan(String uid, String service) {
   String payload;
   serializeJson(body, payload);
 
+  WiFiClientSecure client;
+  client.setInsecure(); // Accepte le certificat SSL de Render
+
   HTTPClient http;
-  http.begin(SERVER_URL);
+  
+  // 1. URL en HTTPS OBLIGATOIRE
+  const char* URL_HTTPS = "https://smart-campus-backend-ne5z.onrender.com/api/hardware/scan";
+
+  http.begin(client, URL_HTTPS);
+  
+  // 2. En-têtes HTTP requis par Render
   http.addHeader("Content-Type", "application/json");
+  http.addHeader("User-Agent", "ESP32-Wokwi"); // <-- INDISPENSABLE pour Render
   http.addHeader("x-device-key", DEVICE_KEY);
 
+  Serial.println("Envoi vers : " + String(URL_HTTPS));
   int code = http.POST(payload);
 
   if (code <= 0) {
-    Serial.println("Erreur HTTP : " + String(code));
+    Serial.println("Erreur HTTP : " + String(code) + " (" + http.errorToString(code) + ")");
     afficher("Erreur reseau", "Reessayez");
     signaler(false, false);
     http.end();
