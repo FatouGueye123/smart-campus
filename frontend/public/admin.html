@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Campus — Espace Administrateur</title>
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="app-shell">
@@ -33,6 +33,16 @@
       <div class="kpi"><div class="label">Alertes en attente</div><div class="value" id="kpiFraud">—</div></div>
       <div class="kpi"><div class="label">Comptes actifs</div><div class="value" id="kpiUsers">—</div></div>
     </section>
+
+    <div class="panel">
+      <h2>Cartes étudiantes</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>UID</th><th>Étudiant</th><th>Solde</th><th>Statut</th><th>Dernier scan</th></tr></thead>
+          <tbody id="cardsBody"><tr><td colspan="5" class="empty-state">Chargement...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
 
     <div class="panel">
       <h2>Alertes de fraude non traitées</h2>
@@ -82,7 +92,7 @@
 </div>
 <script>window.SMART_CAMPUS_API = "https://smart-campus-backend-ne5z.onrender.com/api";</script>
 
-<script src="../js/auth.js"></script>
-<script src="../js/admin.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>
