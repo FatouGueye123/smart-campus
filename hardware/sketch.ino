@@ -123,7 +123,6 @@ void envoyerScan(String uid, String service) {
 
   WiFiClientSecure client;
   client.setInsecure(); // Accepte le certificat SSL de Render
-
   HTTPClient http;
   
   // 1. URL en HTTPS OBLIGATOIRE
