@@ -6,7 +6,7 @@ détection d'anomalie inspirée de l'IA, et 3 espaces web dédiés (Étudiant,
 Technicien, Administrateur).
 
 > Projet transversal — Informatique · Télécom · Intelligence Artificielle · Sécurité
->  Réalisé par Fatou Gueye
+> * Réalisé par Fatou Gueye
 
 * 🔗 **Plateforme en ligne :** https://smart-campus-frontend-v9ih.onrender.com
 * ⚙️ **API backend :** https://smart-campus-backend-ne5z.onrender.com/api/health
