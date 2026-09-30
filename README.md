@@ -1,160 +1,125 @@
 # Smart Campus — Carte étudiante intelligente et sécurisée
 
-Plateforme complète : borne RFID/NFC (ESP32, simulée sur Wokwi) → backend
-Node.js/Express + PostgreSQL → tableaux de bord web (Étudiant, Technicien,
-Administrateur), avec détection d'anomalie type IA anti-fraude.
+Plateforme complète de gestion de carte étudiante multiservices : identification
+par carte RFID/NFC, paiement électronique (restaurant, bibliothèque, transport),
+détection d'anomalie inspirée de l'IA, et 3 espaces web dédiés (Étudiant,
+Technicien, Administrateur).
+
+> Projet transversal — Informatique · Télécom · Intelligence Artificielle · Sécurité
+> Réalisé par Fatou Gueye
+
+**🔗 Plateforme en ligne :** https://smart-campus-frontend-v9ih.onrender.com
+**⚙️ API backend :** https://smart-campus-backend-ne5z.onrender.com/api/health
+**🔧 Simulation matérielle (Wokwi) :** https://wokwi.com/projects/476176373562953729
+
+---
+
+## Aperçu
+![Démo de la plateforme](docs/demo-plateforme.gif)
+![Démo du matériel Wokwi](docs/demo-materiel.gif)
+
+## Fonctionnalités
+
+- **Authentification sécurisée** par rôle (Étudiant / Technicien / Administrateur), avec JWT et mots de passe hachés (bcrypt)
+- **Carte étudiante virtuelle** : solde, historique des transactions, blocage immédiat en cas de perte/vol (réactivation par un technicien)
+- **Bornes IoT (ESP32 + RFID RC522)**, simulées sur Wokwi, qui communiquent en temps réel avec l'API
+- **Détection d'anomalie** sur les scans de carte (pattern de type rejeu/clonage), avec journal de fraude dédié pour l'administrateur
+- **Back-office complet** : association de cartes, diagnostic des bornes, recharge manuelle, gestion des accès, audit des transactions
+
+## Architecture
+
+```
+Carte NFC/RFID → Borne ESP32 (Wokwi) → API REST (Express, Render) → PostgreSQL (Neon)
+                                              ↓
+                          Dashboards web (Étudiant / Technicien / Admin) — Render Static Site
+```
 
 ```
 smart-campus/
 ├── hardware/     Firmware ESP32 (Wokwi) + schéma de câblage
 ├── database/     Schéma PostgreSQL + données de démonstration
-├── backend/      API REST Express (auth JWT, 3 rôles, endpoint bornes)
-└── frontend/     Login + 3 tableaux de bord (HTML/CSS/JS vanilla)
+├── backend/      API REST Express (auth JWT, 3 rôles, endpoint bornes IoT)
+└── frontend/     Login + 3 tableaux de bord (HTML/CSS/JS)
 ```
 
-## Comptes de démonstration
-| Rôle        | Email                  | Mot de passe   |
-|-------------|------------------------|----------------|
-| Admin       | admin@campus.edu       | Admin#2026     |
-| Technicien  | tech@campus.edu        | Tech#2026      |
-| Étudiant    | awa.diop@campus.edu    | Student#2026   |
+## Stack technique
 
-⚠️ Les hachages fournis dans `database/seed.sql` sont des exemples. Génère
-les vrais hachages avant le premier lancement (étape 2 ci-dessous).
+| Domaine | Technologies |
+|---|---|
+| Matériel / IoT | ESP32, RFID RC522, écran OLED SSD1306, Wokwi |
+| Backend | Node.js, Express, PostgreSQL (Neon), JWT, bcrypt — hébergé sur Render |
+| Frontend | HTML / CSS / JavaScript (vanilla) — hébergé sur Render (Static Site) |
+| Sécurité | Hachage des mots de passe, contrôle d'accès par rôle, clé d'authentification dédiée aux bornes, connexions chiffrées TLS |
 
----
+## Pourquoi ce projet va au-delà d'une simple démo
 
-## Étape 1 — Base de données PostgreSQL
+- **Sécurité pensée dès la conception** : les bornes matérielles s'authentifient avec une clé dédiée (pas un compte utilisateur), séparée du système d'authentification JWT des humains.
+- **Détection de fraude réaliste** : l'heuristique de vélocité de scan est un point d'entrée clairement documenté vers un vrai modèle de machine learning (Isolation Forest / Random Forest) entraîné sur l'historique des transactions.
+- **Contrat de données unique** : le firmware ESP32 et l'API partagent exactement le même schéma JSON, ce qui permet de brancher une vraie borne physique sans changer une ligne de l'API.
+- **Séparation claire des responsabilités** : matériel, base de données, API et interface sont dans 4 dossiers indépendants, chacun déployé et testable indépendamment.
 
+## Limitation connue
+
+Le circuit complet (scan de carte → borne ESP32 → API cloud → mise à jour de la
+base de données → affichage sur le dashboard) a été **testé et validé avec
+succès de bout en bout**. La connexion HTTPS entre le firmware ESP32 (simulé
+sur Wokwi) et l'hébergement gratuit de l'API (Render) peut cependant être
+intermittente selon la charge du moment — un comportement documenté pour ce
+type de négociation TLS depuis un microcontrôleur vers une infrastructure
+cloud gratuite. En cas d'échec, il suffit généralement de refaire 2 à 3 scans
+de suite pour que la connexion passe. Si elle ne passe toujours pas après
+plusieurs essais, les GIF de démonstration ci-dessus montrent le
+fonctionnement complet déjà validé. Le reste de la chaîne (lecture RFID,
+affichage OLED, LED, buzzer, logique métier, base de données, dashboards)
+fonctionne de façon fiable à chaque test. Une infrastructure payante ou un
+backend "always-on" éliminerait cette intermittence.
+
+## Lancer le projet en local
+
+### Comptes de démonstration
+| Rôle | Email | Mot de passe |
+|---|---|---|
+| Administrateur | admin@campus.edu | Admin#2026 |
+| Technicien | tech@campus.edu | Tech#2026 |
+| Étudiant | awa.diop@campus.edu | Student#2026 |
+
+### 1. Base de données
 ```bash
 createdb smart_campus
 psql -d smart_campus -f database/schema.sql
+# Générer les vrais hachages avant de charger seed.sql :
+node backend/scripts/hash.js "Admin#2026"
+node backend/scripts/hash.js "Tech#2026"
+node backend/scripts/hash.js "Student#2026"
+psql -d smart_campus -f database/seed.sql
 ```
 
-Génère de vrais mots de passe hachés puis remplace-les dans `seed.sql` :
-
+### 2. Backend
 ```bash
 cd backend
-npm install          # installe bcrypt entre autres
-node scripts/hash.js "Admin#2026"
-node scripts/hash.js "Tech#2026"
-node scripts/hash.js "Student#2026"
-```
-
-Colle chaque hachage obtenu dans `database/seed.sql` (un par utilisateur),
-puis charge les données :
-
-```bash
-psql -d smart_campus -f ../database/seed.sql
-```
-
-## Étape 2 — Backend (API)
-
-```bash
-cd backend
-cp .env.example .env     # puis édite .env : DB_*, JWT_SECRET
+cp .env.example .env   
 npm install
-npm run dev               # démarre sur http://localhost:4000
+npm run dev             # http://localhost:4000
 ```
 
-Vérifie que ça répond :
-```bash
-curl http://localhost:4000/api/health
-```
-
-Teste la connexion :
-```bash
-curl -X POST http://localhost:4000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@campus.edu","password":"Admin#2026"}'
-```
-
-## Étape 3 — Frontend
-
-Le frontend est en HTML/CSS/JS pur : pas de build nécessaire. Ouvre
-`frontend/public/index.html` avec une petite extension de serveur local
-(ex. l'extension VS Code "Live Server"), ou lance :
-
+### 3. Frontend
 ```bash
 cd frontend/public
 python3 -m http.server 5500
-```
-puis ouvre `http://localhost:5500`.
-
-Par défaut, le frontend appelle `http://localhost:4000/api`. Pour changer
-l'URL de l'API (ex. une fois le backend déployé en ligne), ajoute avant les
-scripts dans chaque page HTML :
-```html
-<script>window.SMART_CAMPUS_API = "https://ton-backend-deploye.com/api";</script>
+# puis ouvrir http://localhost:5500/index.html
 ```
 
-## Étape 4 — Firmware Wokwi + Wokwi Gateway (le lien "réaliste")
+### 4. Simulation matérielle (Wokwi)
+1. Ouvre le projet public : https://wokwi.com/projects/476176373562953729
+2. Ou recrée-le : crée un projet ESP32 sur [wokwi.com](https://wokwi.com), colle `hardware/sketch.ino` et `hardware/diagram.json`, installe les bibliothèques (MFRC522, Adafruit SSD1306, Adafruit GFX, ArduinoJson)
+3. Lance la simulation, scanne une carte, observe le résultat sur l'écran OLED et dans le dashboard Admin
 
-C'est l'étape qui relie vraiment la carte simulée à ton vrai backend.
+## Déploiement
 
-1. Va sur [wokwi.com](https://wokwi.com), crée un nouveau projet **ESP32**.
-2. Colle `hardware/sketch.ino` dans l'éditeur de code, et `hardware/diagram.json`
-   dans l'onglet diagram.json (ou reconstruis le câblage à la main avec le
-   README du dossier `hardware/`).
-3. Installe les bibliothèques Wokwi nécessaires (MFRC522, Adafruit SSD1306,
-   Adafruit GFX, ArduinoJson) via le panneau "Library Manager" de Wokwi.
-4. Comme tu as déjà installé le **Wokwi Gateway** (`wokwigw`) :
-   - Lance-le dans un terminal : `wokwigw`
-   - Dans l'éditeur Wokwi (wokwi.com), ouvre la palette de commandes
-     (`F1`) → **"Enable Private Wokwi IoT Gateway"**.
-   - Le firmware utilise déjà l'hôte spécial `host.wokwi.internal` pour
-     atteindre ton backend local (`http://host.wokwi.internal:4000/...`) —
-     rien à changer si ton backend tourne sur le port 4000.
-5. Assure-toi que ton backend (Étape 2) tourne toujours, puis lance la
-   simulation Wokwi et clique sur le lecteur RFID pour "scanner" une carte.
-6. Regarde la console série Wokwi : tu dois voir la requête partir et la
-   réponse du backend (autorisé / refusé / anomalie) s'afficher sur l'OLED
-   simulé, avec la LED et le buzzer qui réagissent.
-7. Connecte-toi ensuite au tableau de bord **Administrateur** (Étape 3) :
-   la transaction apparaît en direct dans le journal d'audit.
+- **Base de données** : [Neon](https://neon.tech) (PostgreSQL gratuit)
+- **Backend** : [Render](https://render.com) (Web Service, connecté à ce dépôt GitHub)
+- **Frontend** : [Render](https://render.com) (Static Site, `frontend/public`)
 
-> Si tu n'as pas (ou plus) le Wokwi Gateway sous la main : le firmware
-> fonctionne aussi en pointant `SERVER_URL` vers un backend déployé
-> publiquement (Render, Railway, Fly.io...) — voir Étape 6.
+## Licence
 
-## Étape 5 — Publier le projet sur GitHub
-
-```bash
-cd smart-campus
-git init
-git add .
-git commit -m "Smart Campus : plateforme carte étudiante intelligente"
-git branch -M main
-git remote add origin https://github.com/<ton-utilisateur>/smart-campus.git
-git push -u origin main
-```
-
-Vérifie avant de pousser que `.env` réel n'est **pas** suivi par git
-(`backend/.gitignore` l'exclut déjà). Pense aussi à retirer les vrais
-hachages de mots de passe de `seed.sql` si tu ne veux pas les exposer,
-ou à les remplacer par les valeurs d'exemple avant publication.
-
-## Étape 6 — Rendre la démo accessible en ligne (pour ton CV)
-
-Pour que quelqu'un puisse tester sans tout installer :
-1. Déploie le **backend** + **PostgreSQL** sur un hébergeur gratuit adapté
-   à Node (Render, Railway, Fly.io proposent un plan gratuit avec Postgres managé).
-2. Déploie le **frontend** (dossier `frontend/public`) sur Vercel, Netlify
-   ou GitHub Pages — ce sont juste des fichiers statiques.
-3. Mets à jour `window.SMART_CAMPUS_API` dans les pages HTML pour pointer
-   vers l'URL du backend déployé.
-4. Mets ce lien dans ton CV / LinkedIn, avec le lien du dépôt GitHub à côté
-   pour montrer le code (architecture, sécurité, IA anti-fraude).
-
-## Ce qui rend le projet crédible pour un recruteur
-- **Sécurité** : mots de passe hachés (bcrypt), JWT avec expiration,
-  contrôle d'accès par rôle (middleware dédié), clé d'authentification
-  séparée pour les bornes matérielles.
-- **IoT réel** : firmware ESP32 fonctionnel sur Wokwi, relié à une vraie
-  API via le Wokwi Gateway — pas juste une maquette visuelle.
-- **IA anti-fraude** : heuristique de détection d'anomalie exposée
-  clairement comme un point d'extension vers un vrai modèle
-  (Isolation Forest / Random Forest) entraîné sur l'historique complet.
-- **Architecture propre** : séparation claire hardware / backend / base de
-  données / frontend, avec un contrat de données identique entre le
-  firmware et l'API.
+Projet académique — libre de réutilisation à des fins d'apprentissage.
