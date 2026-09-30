@@ -24,4 +24,4 @@ INSERT INTO cards (uid, user_id, balance, status) VALUES
 
 -- Borne de démonstration (celle simulée sur Wokwi)
 INSERT INTO devices (device_name, location, api_key, is_online) VALUES
-('Borne-Wokwi-01', 'Restaurant universitaire', 'demo-device-key-please-change', TRUE);
+('Borne-Wokwi-01', 'Borne multiservices (démonstration)', 'demo-device-key-please-change', TRUE);
