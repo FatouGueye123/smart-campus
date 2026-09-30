@@ -35,7 +35,7 @@ Carte NFC/RFID → Borne ESP32 (Wokwi) → API REST (Express, Render) → Postgr
 
 > **Note sur les services** : en production, chaque borne serait dédiée à un
 > seul service selon son emplacement physique (une borne au restaurant, une
-> au portique transport, une à la photocopieuse, etc.) — la table `devices`
+> au portique transport, une à la photocopieuse) — la table `devices`
 > le permet déjà. Dans cette démo, une seule borne simulée sur Wokwi teste
 > les 4 services au hasard, uniquement pour démontrer la variété des cas
 > d'usage (prix différents, détection de fraude) sans multiplier les
