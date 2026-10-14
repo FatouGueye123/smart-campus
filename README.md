@@ -14,7 +14,7 @@ Technicien, Administrateur).
 ## Aperçu
 ![Démo du matériel Wokwi](docs/demo-materiel.gif)
 ![Démo de la plateforme](docs/demo-plateforme.gif)
-> *Capture réalisée avec une version antérieure de l'interface : la colonne « Score IA » s'appelle désormais « Score de risque ». Le score est attribué par une règle heuristique, sans modèle d'IA à ce stade.*
+> *Capture réalisée avec une version antérieure de l'interface : la colonne « Risque IA » s'appelle désormais « Score de risque ». Le score est attribué par une règle heuristique, sans modèle d'IA à ce stade.*
 
 ## Fonctionnalités
 
