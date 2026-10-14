@@ -3,10 +3,9 @@
 // Authentification simple par clé d'appareil (header x-device-key), car un
 // microcontrôleur ne gère pas de session JWT comme un utilisateur.
 //
-// Le module IA anti-fraude est ici simplifié à une heuristique de vélocité
-// de scan (cf. hardware/sketch.ino) : en production, ce serait un appel à un
-// service de scoring entraîné (Isolation Forest / Random Forest) sur
-// l'historique complet des transactions.
+// La détection d'anomalies est ici une heuristique de vélocité de scan.
+// Évolution possible : un modèle de machine learning (Isolation Forest /
+// Random Forest) entraîné sur l'historique des transactions.
 // ============================================================================
 const pool = require('../config/db');
 
@@ -50,7 +49,7 @@ async function receiveScan(req, res) {
 
     // 3. Score de risque (heuristique de vélocité)
     const lastScan = card.last_scanned_at ? new Date(card.last_scanned_at).getTime() : 0;
-    const now = timestamp ? Number(timestamp) : Date.now();
+    const now = Date.now();
     let riskScore = 0.05 + Math.random() * 0.1;
     if (lastScan && now - lastScan < REPLAY_WINDOW_MS) {
       riskScore = 0.75 + Math.random() * 0.2;
