@@ -14,13 +14,14 @@ Technicien, Administrateur).
 ## Aperçu
 ![Démo du matériel Wokwi](docs/demo-materiel.gif)
 ![Démo de la plateforme](docs/demo-plateforme.gif)
+> *Capture réalisée avec une version antérieure de l'interface : la colonne « Score IA » s'appelle désormais « Score de risque ». Le score est attribué par une règle heuristique, sans modèle d'IA à ce stade.*
 
 ## Fonctionnalités
 
 - **Authentification sécurisée** par rôle (Étudiant / Technicien / Administrateur), avec JWT et mots de passe hachés (bcrypt)
 - **Carte étudiante virtuelle** : solde, historique des transactions, blocage immédiat en cas de perte/vol (réactivation par un technicien)
 - **Bornes IoT (ESP32 + RFID RC522)**, simulées sur Wokwi, qui communiquent en temps réel avec l'API
-- **Détection d'anomalie** sur les scans de carte (pattern de type rejeu/clonage), avec journal de fraude dédié pour l'administrateur
+- **Détection d'anomalie** sur les scans de carte (pattern de type rejeu), avec journal de fraude dédié pour l'administrateur
 - **Back-office complet** : association de cartes, diagnostic des bornes, recharge manuelle, gestion des accès, audit des transactions
 
 ## Architecture
@@ -75,8 +76,8 @@ cloud gratuite. En cas d'échec, il suffit généralement de refaire 2 à 3 scan
 de suite pour que la connexion passe. Si elle ne passe toujours pas après
 plusieurs essais, les GIF de démonstration ci-dessus montrent le
 fonctionnement complet déjà validé. Le reste de la chaîne (lecture RFID,
-affichage OLED, LED, buzzer, logique métier, base de données, dashboards)
-fonctionne de façon fiable à chaque test. Une infrastructure payante ou un
+affichage OLED, LED, buzzer, base de données, dashboards)
+fonctionne de façon fiable. Une infrastructure payante ou un
 backend "always-on" éliminerait cette intermittence.
 
 Par ailleurs, la détection d'anomalies repose pour l'instant sur une règle heuristique (délai entre deux scans d'une même carte), sans modèle d'intelligence artificielle à ce stade. L'intégration d'un modèle de machine learning (Isolation Forest / Random Forest) entraîné sur l'historique des transactions est une évolution prévue.
