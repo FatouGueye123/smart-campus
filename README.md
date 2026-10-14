@@ -2,10 +2,8 @@
 
 Plateforme complète de gestion de carte étudiante multiservices : identification
 par carte RFID/NFC, paiement électronique (restaurant, bibliothèque, transport),
-détection d'anomalie inspirée de l'IA, et 3 espaces web dédiés (Étudiant,
+détection d’anomalies par règles (heuristique de vélocité de scan), et 3 espaces web dédiés (Étudiant,
 Technicien, Administrateur).
-
-> Projet transversal — Informatique · Télécom · Intelligence Artificielle · Sécurité
 
 * 🔗 **Plateforme en ligne :** https://smart-campus-frontend-v9ih.onrender.com
 * ⚙️ **API backend :** https://smart-campus-backend-ne5z.onrender.com/api/health
@@ -61,7 +59,7 @@ smart-campus/
 ## Pourquoi ce projet va au-delà d'une simple démo
 
 - **Sécurité pensée dès la conception** : les bornes matérielles s'authentifient avec une clé dédiée (pas un compte utilisateur), séparée du système d'authentification JWT des humains.
-- **Détection de fraude réaliste** : l'heuristique de vélocité de scan est un point d'entrée clairement documenté vers un vrai modèle de machine learning (Isolation Forest / Random Forest) entraîné sur l'historique des transactions.
+- **Détection d’anomalies par règles** : une heuristique de vélocité détecte les scans trop rapprochés sur une même carte (pattern de type rejeu). Elle est conçue comme point d’entrée vers un futur modèle de machine learning (Isolation Forest / Random Forest) entraîné sur l’historique des transactions.
 - **Contrat de données unique** : le firmware ESP32 et l'API partagent exactement le même schéma JSON, ce qui permet de brancher une vraie borne physique sans changer une ligne de l'API.
 - **Séparation claire des responsabilités** : matériel, base de données, API et interface sont dans 4 dossiers indépendants, chacun déployé et testable indépendamment.
 
@@ -80,6 +78,8 @@ fonctionnement complet déjà validé. Le reste de la chaîne (lecture RFID,
 affichage OLED, LED, buzzer, logique métier, base de données, dashboards)
 fonctionne de façon fiable à chaque test. Une infrastructure payante ou un
 backend "always-on" éliminerait cette intermittence.
+
+Par ailleurs, la détection d'anomalies repose pour l'instant sur une règle heuristique (délai entre deux scans d'une même carte), sans modèle d'intelligence artificielle à ce stade. L'intégration d'un modèle de machine learning (Isolation Forest / Random Forest) entraîné sur l'historique des transactions est une évolution prévue.
 
 ## Lancer le projet en local
 
@@ -127,6 +127,3 @@ python3 -m http.server 5500
 - **Backend** : [Render](https://render.com) (Web Service, connecté à ce dépôt GitHub)
 - **Frontend** : [Render](https://render.com) (Static Site, `frontend/public`)
 
-## Licence
-
-Projet académique — libre de réutilisation à des fins d'apprentissage.
